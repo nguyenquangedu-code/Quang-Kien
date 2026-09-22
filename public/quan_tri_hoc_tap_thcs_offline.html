@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUẢN TRỊ HỌC TẬP THCS - THCS Phan Bội Châu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+          🎓
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-black text-slate-900 leading-tight">QUẢN TRỊ HỌC TẬP THCS</h1>
+          <div class="text-xs text-slate-500 flex items-center gap-2">
+            <span>🏫 THCS Phan Bội Châu</span>
+            <span>•</span>
+            <span class="text-blue-700 font-semibold">GV: Nguyễn Quang Kiên</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="soundToggleBtn" onclick="toggleSound()" class="px-3 py-1.5 text-xs font-bold rounded-xl border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer">
+          🔊 Âm thanh: Bật
+        </button>
+        <button onclick="resetDataPrompt()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer">
+          ↺ Dữ liệu mẫu
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="flex-1 max-w-7xl w-full mx-auto flex flex-col md:flex-row p-4 sm:p-6 gap-6">
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-60 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm shrink-0 flex md:flex-col gap-1 overflow-x-auto">
+      <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white transition text-left cursor-pointer">
+        <span>📊</span> <span>Tổng quan</span>
+      </button>
+      <button onclick="switchTab('students')" id="nav-students" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-50 transition text-left cursor-pointer">
+        <span>👥</span> <span>Học sinh</span>
+      </button>
+      <button onclick="switchTab('tasks')" id="nav-tasks" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-50 transition text-left cursor-pointer">
+        <span>📝</span> <span>Nhiệm vụ</span>
+      </button>
+      <button onclick="switchTab('progress')" id="nav-progress" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-50 transition text-left cursor-pointer">
+        <span>📈</span> <span>Tiến độ</span>
+      </button>
+      <button onclick="switchTab('grades')" id="nav-grades" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-50 transition text-left cursor-pointer">
+        <span>🏆</span> <span>Kết quả điểm</span>
+      </button>
+      <button onclick="switchTab('notifications')" id="nav-notifications" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-50 transition text-left cursor-pointer">
+        <span>🔔</span> <span>Thông báo</span>
+      </button>
+    </aside>
+
+    <!-- Workspace -->
+    <main class="flex-1 min-w-0">
+      <!-- 1. TỔNG QUAN -->
+      <section id="tab-overview" class="tab-content active space-y-6">
+        <div class="bg-gradient-to-r from-blue-700 to-teal-600 text-white p-6 rounded-2xl shadow-md">
+          <span class="text-xs font-semibold px-2.5 py-1 bg-white/20 rounded-full">Trường THCS Phan Bội Châu</span>
+          <h2 class="text-xl sm:text-2xl font-black mt-2">Bảng điều khiển lớp học - Thầy Nguyễn Quang Kiên</h2>
+          <p class="text-blue-100 text-xs sm:text-sm mt-1">Theo dõi hoạt động học tập, tỷ lệ nộp bài tập và kết quả đánh giá học sinh.</p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-semibold">Tổng học sinh</span>
+            <div id="statTotalStudents" class="text-2xl font-black text-slate-800 mt-1">10</div>
+            <span class="text-[11px] text-slate-400">3 lớp (7A1, 7A2, 8B1)</span>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-semibold">Nhiệm vụ học tập</span>
+            <div id="statTotalTasks" class="text-2xl font-black text-slate-800 mt-1">6</div>
+            <span class="text-[11px] text-slate-400">Các môn học</span>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-semibold">Đã hoàn thành</span>
+            <div id="statCompletedSubmissions" class="text-2xl font-black text-emerald-600 mt-1">--</div>
+            <span class="text-[11px] text-emerald-600 font-medium">Lượt hoàn thành</span>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-semibold">Chưa hoàn thành</span>
+            <div id="statPendingSubmissions" class="text-2xl font-black text-amber-600 mt-1">--</div>
+            <span class="text-[11px] text-amber-600 font-medium">Cần nộp bài</span>
+          </div>
+          <div class="col-span-2 sm:col-span-1 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <span class="text-xs text-slate-500 font-semibold">Điểm trung bình</span>
+            <div id="statAvgScore" class="text-2xl font-black text-blue-700 mt-1">--</div>
+            <span class="text-[11px] text-blue-600 font-medium">Thang điểm 10</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-slate-800 text-sm">Tiến độ hoàn thành bài tập chung</span>
+            <span id="statCompletionRate" class="font-black text-teal-700 text-base">0%</span>
+          </div>
+          <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+            <div id="statCompletionBar" style="width: 0%" class="bg-teal-600 h-full rounded-full transition-all duration-500"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. HỌC SINH -->
+      <section id="tab-students" class="tab-content space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900">Danh sách học sinh THCS</h2>
+          <button onclick="promptAddStudent()" class="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl shadow hover:bg-blue-700 transition cursor-pointer">
+            + Thêm học sinh mới
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="searchStudentInput" oninput="renderStudents()" placeholder="Tìm theo tên hoặc mã học sinh..." class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl">
+          <select id="filterStudentClass" onchange="renderStudents()" class="px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-bold">
+            <option value="all">Tất cả lớp</option>
+            <option value="7A1">Lớp 7A1</option>
+            <option value="7A2">Lớp 7A2</option>
+            <option value="8B1">Lớp 8B1</option>
+          </select>
+        </div>
+        <div id="studentListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+      </section>
+
+      <!-- 3. NHIỆM VỤ -->
+      <section id="tab-tasks" class="tab-content space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900">Quản lý nhiệm vụ học tập</h2>
+          <button onclick="promptAddTask()" class="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl shadow hover:bg-blue-700 transition cursor-pointer">
+            + Tạo nhiệm vụ mới
+          </button>
+        </div>
+        <div id="taskListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <!-- 4. TIẾN ĐỘ -->
+      <section id="tab-progress" class="tab-content space-y-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 mb-1">Theo dõi tiến độ chi tiết</h2>
+          <p class="text-xs text-slate-500 mb-4">Chọn học sinh để kiểm tra danh sách nhiệm vụ đã làm và chưa làm</p>
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-bold text-slate-700">Chọn học sinh:</span>
+            <select id="progressStudentSelect" onchange="renderStudentProgressDetail()" class="px-3 py-1.5 text-xs font-bold bg-blue-50 border border-blue-200 rounded-xl text-blue-900">
+            </select>
+          </div>
+          <div id="studentProgressDetailContainer"></div>
+        </div>
+      </section>
+
+      <!-- 5. KẾT QUẢ & ĐIỂM -->
+      <section id="tab-grades" class="tab-content space-y-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">Sổ điểm & Nhận xét kết quả</h2>
+            <select id="gradeTaskSelect" onchange="renderGradesTable()" class="px-3 py-1.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl"></select>
+          </div>
+          <p class="text-xs text-blue-700 bg-blue-50 p-2.5 rounded-xl mb-4">
+            ℹ️ <strong>Lưu ý:</strong> Điểm số và nhận xét ở đây đóng vai trò đánh giá quá trình và hỗ trợ sự tiến bộ của học sinh THCS.
+          </p>
+          <div id="gradesTableContainer" class="overflow-x-auto"></div>
+        </div>
+      </section>
+
+      <!-- 6. THÔNG BÁO -->
+      <section id="tab-notifications" class="tab-content space-y-4">
+        <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900">Bản tin thông báo & Nhắc việc</h2>
+          <button onclick="promptAddNotice()" class="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl shadow hover:bg-blue-700 cursor-pointer">
+            + Đăng thông báo
+          </button>
+        </div>
+        <div id="noticesListContainer" class="space-y-3"></div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500 mt-auto">
+    Trường THCS Phan Bội Châu • GV Nguyễn Quang Kiên • Hệ thống chạy Offline hoàn toàn trên trình duyệt
+  </footer>
+
+  <script>
+    // Dữ liệu mẫu THCS Phan Bội Châu
+    const DEFAULT_STUDENTS = [
+      { id: 'hs-01', code: 'HS-70101', name: 'Nguyễn Trần Minh Anh', class: '7A1', gender: 'Nữ', status: 'Chăm chỉ', notes: 'Tích cực phát biểu' },
+      { id: 'hs-02', code: 'HS-70102', name: 'Trần Gia Bảo', class: '7A1', gender: 'Nam', status: 'Tiến bộ tốt', notes: 'Tiến bộ môn Toán' },
+      { id: 'hs-03', code: 'HS-70103', name: 'Lê Hoàng Đăng Khoa', class: '7A1', gender: 'Nam', status: 'Chăm chỉ', notes: 'Tư duy logic tốt' },
+      { id: 'hs-04', code: 'HS-70104', name: 'Phạm Ngọc Thùy Dương', class: '7A1', gender: 'Nữ', status: 'Cần theo dõi', notes: 'Quên bài tập Tiếng Anh' },
+      { id: 'hs-05', code: 'HS-70201', name: 'Vũ Đức Trọng', class: '7A2', gender: 'Nam', status: 'Đạt yêu cầu', notes: 'Cần rèn trình bày' },
+      { id: 'hs-06', code: 'HS-70202', name: 'Đặng Mai Phương', class: '7A2', gender: 'Nữ', status: 'Chăm chỉ', notes: 'Chữ viết đẹp' },
+      { id: 'hs-07', code: 'HS-70203', name: 'Bùi Tuấn Kiệt', class: '7A2', gender: 'Nam', status: 'Cần cố gắng', notes: 'Cần làm thêm bài tập' },
+      { id: 'hs-08', code: 'HS-80101', name: 'Hoàng Thục Quyên', class: '8B1', gender: 'Nữ', status: 'Chăm chỉ', notes: 'Trách nhiệm cao' },
+      { id: 'hs-09', code: 'HS-80102', name: 'Phan Quốc Huy', class: '8B1', gender: 'Nam', status: 'Tiến bộ tốt', notes: 'Hứng thú KHTN' },
+      { id: 'hs-10', code: 'HS-80103', name: 'Ngô Hải Yến', class: '8B1', gender: 'Nữ', status: 'Đạt yêu cầu', notes: 'Hoàn thành đúng hạn' }
+    ];
+
+    const DEFAULT_TASKS = [
+      { id: 't-01', title: 'Phiếu bài tập Tam giác bằng nhau', subject: 'Toán học', content: 'Làm bài 1, 2, 3 phiếu số 4', dueDate: '2026-09-28', maxScore: 10, targetClass: 'Tất cả', status: 'in_progress' },
+      { id: 't-02', title: 'Viết đoạn văn cảm nhận tình mẫu tử', subject: 'Ngữ văn', content: 'Khoảng 150-200 chữ có phép so sánh', dueDate: '2026-09-25', maxScore: 10, targetClass: '7A1', status: 'pending' },
+      { id: 't-03', title: 'Báo cáo thí nghiệm: Tốc độ phản ứng', subject: 'Khoa học tự nhiên', content: 'Ghi chép hiện tượng sủi bọt khí', dueDate: '2026-09-24', maxScore: 10, targetClass: 'Tất cả', status: 'in_progress' },
+      { id: 't-04', title: 'Từ vựng Unit 3 & Nghe Section B', subject: 'Tiếng Anh', content: 'Luyện nghe trên web học liệu', dueDate: '2026-09-22', maxScore: 10, targetClass: '7A1', status: 'overdue' },
+      { id: 't-05', title: 'Sơ đồ tư duy: Khởi nghĩa Lam Sơn', subject: 'Lịch sử & Địa lí', content: 'Vẽ tóm tắt 3 giai đoạn chính', dueDate: '2026-10-02', maxScore: 10, targetClass: 'Tất cả', status: 'pending' },
+      { id: 't-06', title: 'Thuật toán tìm kiếm nhị phân', subject: 'Tin học', content: 'Mô phỏng từng bước chia đôi dãy số', dueDate: '2026-09-20', maxScore: 10, targetClass: '8B1', status: 'completed' }
+    ];
+
+    const DEFAULT_GRADES = [
+      { studentId: 'hs-01', taskId: 't-01', score: 9.5, feedback: 'Hoàn thành tốt, hình vẽ rất chính xác' },
+      { studentId: 'hs-02', taskId: 't-01', score: 8.5, feedback: 'Lập luận tốt, cần chú ý đơn vị đo' },
+      { studentId: 'hs-03', taskId: 't-01', score: 10.0, feedback: 'Bài làm xuất sắc' },
+      { studentId: 'hs-05', taskId: 't-01', score: 7.0, feedback: 'Đạt yêu cầu' },
+      { studentId: 'hs-06', taskId: 't-01', score: 9.0, feedback: 'Bài giải rõ ràng' },
+      { studentId: 'hs-08', taskId: 't-01', score: 9.0, feedback: 'Đúng phương pháp' },
+      { studentId: 'hs-01', taskId: 't-03', score: 9.0, feedback: 'Quan sát tỉ mỉ' },
+      { studentId: 'hs-02', taskId: 't-03', score: 8.5, feedback: 'Thao tác thí nghiệm đúng bước' },
+      { studentId: 'hs-08', taskId: 't-06', score: 9.5, feedback: 'Thuật toán nắm rất chắc' }
+    ];
+
+    const DEFAULT_NOTICES = [
+      { id: 'n-01', title: 'Kiểm tra giữa học kỳ I môn KHTN', content: 'Kế hoạch kiểm tra tập trung vào tuần 6. Học sinh ôn tập kỹ Bảng tuần hoàn.', date: '2026-09-22', recipient: 'Toàn bộ học sinh', priority: 'urgent' },
+      { id: 'n-02', title: 'Nhắc nhở nộp bài tập Ngữ văn 7A1', content: 'Hạn nộp đoạn văn là thứ Sáu ngày 25/09.', date: '2026-09-21', recipient: 'Lớp 7A1', priority: 'important' }
+    ];
+
+    let students = JSON.parse(localStorage.getItem('thcs_standalone_students')) || DEFAULT_STUDENTS;
+    let tasks = JSON.parse(localStorage.getItem('thcs_standalone_tasks')) || DEFAULT_TASKS;
+    let grades = JSON.parse(localStorage.getItem('thcs_standalone_grades')) || DEFAULT_GRADES;
+    let notices = JSON.parse(localStorage.getItem('thcs_standalone_notices')) || DEFAULT_NOTICES;
+    let soundEnabled = true;
+
+    function saveAll() {
+      localStorage.setItem('thcs_standalone_students', JSON.stringify(students));
+      localStorage.setItem('thcs_standalone_tasks', JSON.stringify(tasks));
+      localStorage.setItem('thcs_standalone_grades', JSON.stringify(grades));
+      localStorage.setItem('thcs_standalone_notices', JSON.stringify(notices));
+      updateOverview();
+    }
+
+    // Web Audio chime
+    function playChime() {
+      if (!soundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.08);
+          gain.gain.setValueAtTime(0.08, now + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.08 + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.08);
+          osc.stop(now + i * 0.08 + 0.45);
+        });
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊 Âm thanh: Bật' : '🔇 Âm thanh: Tắt';
+      if (soundEnabled) playChime();
+    }
+
+    function resetDataPrompt() {
+      if (confirm('Đặt lại toàn bộ dữ liệu mẫu THCS Phan Bội Châu?')) {
+        students = [...DEFAULT_STUDENTS];
+        tasks = [...DEFAULT_TASKS];
+        grades = [...DEFAULT_GRADES];
+        notices = [...DEFAULT_NOTICES];
+        saveAll();
+        renderAll();
+        playChime();
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('bg-blue-600', 'text-white');
+        el.classList.add('text-slate-600', 'hover:bg-slate-50');
+      });
+      document.getElementById('tab-' + tabId).classList.add('active');
+      const btn = document.getElementById('nav-' + tabId);
+      btn.classList.add('bg-blue-600', 'text-white');
+      btn.classList.remove('text-slate-600', 'hover:bg-slate-50');
+      playChime();
+    }
+
+    function updateOverview() {
+      document.getElementById('statTotalStudents').textContent = students.length;
+      document.getElementById('statTotalTasks').textContent = tasks.length;
+      
+      let completed = grades.filter(g => g.score !== null && g.score !== undefined).length;
+      let totalPotential = students.length * tasks.length;
+      let rate = totalPotential > 0 ? Math.round((completed / totalPotential) * 100) : 0;
+
+      document.getElementById('statCompletedSubmissions').textContent = completed;
+      document.getElementById('statPendingSubmissions').textContent = Math.max(0, totalPotential - completed);
+      document.getElementById('statCompletionRate').textContent = rate + '%';
+      document.getElementById('statCompletionBar').style.width = rate + '%';
+
+      let scores = grades.filter(g => g.score !== null).map(g => g.score);
+      let avg = scores.length > 0 ? (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(1) : '--';
+      document.getElementById('statAvgScore').textContent = avg;
+    }
+
+    function renderStudents() {
+      const term = document.getElementById('searchStudentInput')?.value.toLowerCase() || '';
+      const cls = document.getElementById('filterStudentClass')?.value || 'all';
+      const container = document.getElementById('studentListContainer');
+      if (!container) return;
+
+      const filtered = students.filter(s => {
+        return (cls === 'all' || s.class === cls) &&
+               (s.name.toLowerCase().includes(term) || s.code.toLowerCase().includes(term));
+      });
+
+      container.innerHTML = filtered.map(s => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold px-2 py-0.5 bg-blue-100 text-blue-800 rounded-md">Lớp ${s.class}</span>
+              <span class="text-xs text-slate-400 font-mono">${s.code}</span>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">${s.name} (${s.gender})</h3>
+            <p class="text-xs text-slate-500 mt-1">Trạng thái: <strong>${s.status}</strong></p>
+            ${s.notes ? `<p class="text-xs text-slate-400 italic mt-1 bg-slate-50 p-1.5 rounded">"${s.notes}"</p>` : ''}
+          </div>
+          <div class="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-slate-100">
+            <button onclick="deleteStudent('${s.id}')" class="text-xs font-bold text-rose-600 hover:underline">Xóa</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function promptAddStudent() {
+      const name = prompt('Nhập họ và tên học sinh:');
+      if (!name) return;
+      const cls = prompt('Nhập lớp (7A1, 7A2, 8B1):', '7A1') || '7A1';
+      const code = 'HS-' + Math.floor(10000 + Math.random() * 90000);
+      students.push({
+        id: 'hs-' + Date.now(),
+        code,
+        name,
+        class: cls,
+        gender: 'Nam',
+        status: 'Chăm chỉ',
+        notes: 'Học sinh mới thêm'
+      });
+      saveAll();
+      renderStudents();
+      playChime();
+    }
+
+    function deleteStudent(id) {
+      if (confirm('Bạn có chắc chắn muốn xóa học sinh này?')) {
+        students = students.filter(s => s.id !== id);
+        grades = grades.filter(g => g.studentId !== id);
+        saveAll();
+        renderStudents();
+        playChime();
+      }
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('taskListContainer');
+      if (!container) return;
+      container.innerHTML = tasks.map(t => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold px-2 py-0.5 bg-purple-100 text-purple-800 rounded-md">${t.subject}</span>
+            <span class="text-xs text-slate-500">Hạn: <strong>${t.dueDate}</strong></span>
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm mb-1">${t.title}</h3>
+          <p class="text-xs text-slate-600 mb-3 bg-slate-50 p-2 rounded-lg">${t.content}</p>
+          <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-100">
+            <span class="font-medium text-slate-500">Áp dụng: <strong>${t.targetClass}</strong> • ${t.maxScore}đ</span>
+            <button onclick="deleteTask('${t.id}')" class="text-rose-600 font-bold hover:underline">Xóa</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function promptAddTask() {
+      const title = prompt('Tên nhiệm vụ / bài tập:');
+      if (!title) return;
+      const subject = prompt('Môn học (Toán, Văn, KHTN, Tiếng Anh...):', 'Toán học') || 'Toán học';
+      const content = prompt('Hướng dẫn / Yêu cầu:', 'Hoàn thành bài tập theo phiếu') || 'Làm bài đầy đủ';
+      const dueDate = prompt('Hạn nộp (YYYY-MM-DD):', '2026-09-30') || '2026-09-30';
+      tasks.push({
+        id: 't-' + Date.now(),
+        title,
+        subject,
+        content,
+        dueDate,
+        maxScore: 10,
+        targetClass: 'Tất cả',
+        status: 'in_progress'
+      });
+      saveAll();
+      renderTasks();
+      playChime();
+    }
+
+    function deleteTask(id) {
+      if (confirm('Xác nhận xóa bài tập này?')) {
+        tasks = tasks.filter(t => t.id !== id);
+        grades = grades.filter(g => g.taskId !== id);
+        saveAll();
+        renderTasks();
+        playChime();
+      }
+    }
+
+    function renderStudentProgressDetail() {
+      const select = document.getElementById('progressStudentSelect');
+      const studentId = select?.value || students[0]?.id;
+      const student = students.find(s => s.id === studentId);
+      const container = document.getElementById('studentProgressDetailContainer');
+      if (!student || !container) return;
+
+      const studentTasks = tasks.filter(t => t.targetClass === 'Tất cả' || t.targetClass === student.class);
+      const rows = studentTasks.map(t => {
+        const rec = grades.find(g => g.studentId === student.id && g.taskId === t.id);
+        const hasScore = rec?.score !== undefined && rec?.score !== null;
+        return `
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+            <div>
+              <span class="font-bold text-blue-800">[${t.subject}] ${t.title}</span>
+              <p class="text-slate-500 text-[11px] mt-0.5">Nhận xét: ${rec?.feedback || 'Chưa nhận xét'}</p>
+            </div>
+            <span class="font-black text-sm ${hasScore ? 'text-teal-700' : 'text-slate-400'}">
+              ${hasScore ? rec.score + 'đ' : 'Chưa chấm'}
+            </span>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-200 mb-4">
+          <div class="font-bold text-slate-800 text-sm">${student.name} - Lớp ${student.class} (${student.code})</div>
+          <div class="text-xs text-slate-600 mt-0.5">Trạng thái: ${student.status} • Đã hoàn thành ${grades.filter(g => g.studentId === student.id && g.score !== null).length}/${studentTasks.length} bài</div>
+        </div>
+        <div class="space-y-2">${rows}</div>
+      `;
+    }
+
+    function renderGradesTable() {
+      const taskSelect = document.getElementById('gradeTaskSelect');
+      const taskId = taskSelect?.value || tasks[0]?.id;
+      const currentTask = tasks.find(t => t.id === taskId);
+      const container = document.getElementById('gradesTableContainer');
+      if (!currentTask || !container) return;
+
+      const rows = students.map(s => {
+        const rec = grades.find(g => g.studentId === s.id && g.taskId === currentTask.id);
+        const scoreVal = rec?.score !== undefined && rec?.score !== null ? rec.score : '';
+        const feedbackVal = rec?.feedback || '';
+
+        return `
+          <tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="py-2.5 px-3 font-bold text-xs">${s.name} <span class="text-slate-400 font-normal">(${s.class})</span></td>
+            <td class="py-2.5 px-3">
+              <input type="number" step="0.5" min="0" max="10" value="${scoreVal}" onchange="updateGradeScore('${s.id}', '${currentTask.id}', this.value)" class="w-16 px-2 py-1 text-xs border border-slate-300 rounded font-bold text-blue-700 text-center" placeholder="--">
+            </td>
+            <td class="py-2.5 px-3">
+              <input type="text" value="${feedbackVal}" onchange="updateGradeFeedback('${s.id}', '${currentTask.id}', this.value)" class="w-full px-2 py-1 text-xs border border-slate-300 rounded" placeholder="Nhận xét...">
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 font-bold uppercase text-slate-500">
+            <tr>
+              <th class="py-2 px-3">Học sinh</th>
+              <th class="py-2 px-3 w-28 text-center">Điểm (0-10)</th>
+              <th class="py-2 px-3">Nhận xét</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function updateGradeScore(studentId, taskId, val) {
+      let num = val === '' ? null : parseFloat(val);
+      let existing = grades.find(g => g.studentId === studentId && g.taskId === taskId);
+      if (existing) {
+        existing.score = num;
+      } else {
+        grades.push({ studentId, taskId, score: num, feedback: num >= 8 ? 'Hoàn thành tốt' : 'Đạt yêu cầu' });
+      }
+      saveAll();
+      playChime();
+    }
+
+    function updateGradeFeedback(studentId, taskId, val) {
+      let existing = grades.find(g => g.studentId === studentId && g.taskId === taskId);
+      if (existing) {
+        existing.feedback = val;
+      } else {
+        grades.push({ studentId, taskId, score: null, feedback: val });
+      }
+      saveAll();
+    }
+
+    function renderNotices() {
+      const container = document.getElementById('noticesListContainer');
+      if (!container) return;
+      container.innerHTML = notices.map(n => `
+        <div class="p-4 rounded-2xl border ${n.priority === 'urgent' ? 'bg-rose-50/50 border-rose-200' : 'bg-white border-slate-200'} shadow-sm">
+          <div class="flex items-center justify-between mb-1 text-xs">
+            <span class="font-bold ${n.priority === 'urgent' ? 'text-rose-700' : 'text-blue-700'}">${n.recipient}</span>
+            <span class="text-slate-400">${n.date}</span>
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm mb-1">${n.title}</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">${n.content}</p>
+        </div>
+      `).join('');
+    }
+
+    function promptAddNotice() {
+      const title = prompt('Tiêu đề thông báo:');
+      if (!title) return;
+      const content = prompt('Nội dung:');
+      if (!content) return;
+      notices.unshift({
+        id: 'n-' + Date.now(),
+        title,
+        content,
+        date: new Date().toISOString().split('T')[0],
+        recipient: 'Toàn bộ học sinh',
+        priority: 'normal'
+      });
+      saveAll();
+      renderNotices();
+      playChime();
+    }
+
+    function renderAll() {
+      updateOverview();
+      renderStudents();
+      renderTasks();
+      
+      // Update student select for progress
+      const pSelect = document.getElementById('progressStudentSelect');
+      if (pSelect) {
+        pSelect.innerHTML = students.map(s => `<option value="${s.id}">${s.name} - Lớp ${s.class}</option>`).join('');
+      }
+      renderStudentProgressDetail();
+
+      // Update task select for grading
+      const gSelect = document.getElementById('gradeTaskSelect');
+      if (gSelect) {
+        gSelect.innerHTML = tasks.map(t => `<option value="${t.id}">[${t.subject}] ${t.title}</option>`).join('');
+      }
+      renderGradesTable();
+      renderNotices();
+    }
+
+    // Init
+    window.onload = () => {
+      renderAll();
+    };
+  </script>
+</body>
+</html>

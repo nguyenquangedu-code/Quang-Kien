@@ -1,0 +1,8 @@
+{
+  "name": "Remix QUẢN TRỊ HỌC TẬP THCS",
+  "description": "Hệ thống quản trị học tập dành cho trường THCS Phan Bội Châu - Giáo viên Nguyễn Quang Kiên. Quản lý học sinh, nhiệm vụ, tiến độ, điểm số và thông báo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
